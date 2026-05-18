@@ -1,0 +1,27 @@
+
+--- Testing Prompt: Tell me about the history of Rome, Texas ---
+0.3857057189769208
+0.16501924510682747
+0.0026493382495585585
+[Router] Best agent: texas agent (score=0.386)
+Final Routing Agent Response: I'm sorry, but there is no historical information available about Rome, Texas. It seems that Rome, Texas does not have a significant historical background or notable events associated with it.
+
+--- Testing Prompt: Tell me about the history of Rome, Italy ---
+0.1436619675824389
+0.288014130474986
+0.03205317593687523
+[Router] Best agent: europe agent (score=0.288)
+Final Routing Agent Response: Rome, Italy, has a rich and extensive history that dates back over 2,800 years. It was founded in 753 BC and grew to become the capital of the Roman Kingdom, Roman Republic, and later the Roman Empire. Rome was a major center of power, culture, and civilization in ancient times, known for its advancements in architecture, engineering, art, literature, and law.
+
+The Roman Empire reached its peak in the 2nd century AD, covering a vast territory across Europe, Africa, and Asia. However, internal strife, economic issues, and invasions by barbarian tribes led to the decline of the empire. In 476 AD, Rome fell to the Germanic chieftain Odoacer, marking the end of the Western Roman Empire.
+
+After the fall of the Western Roman Empire, Rome went through various periods of turmoil and change. It was ruled by different kingdoms and empires, including the Byzantine Empire and the Holy Roman Empire. In the 19th century, Rome became the capital of the newly unified Kingdom of Italy.
+
+In the 20th century, Rome played a significant role in World War II as the capital of Fascist Italy under Benito Mussolini. After the war, Italy became a republic, and Rome continued to be its capital. Today, Rome is a major cultural and historical center, known for its ancient ruins, art museums, and religious sites, including the Vatican City, the center of the Catholic Church.
+
+--- Testing Prompt: One story takes 2 days, and there are 20 stories ---
+0.059320322829926525
+0.08284917647064205
+0.13007251677099022
+[Router] Best agent: math agent (score=0.130)
+Final Routing Agent Response: It will take 40 days to complete 20 stories.

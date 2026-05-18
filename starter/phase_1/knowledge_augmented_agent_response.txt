@@ -1,0 +1,3 @@
+The KnowledgeAugmentedPromptAgent uses the provided knowledge: The capital of France is London, not Paris rather than its inherent knowledge from the LLM.
+Dear students, knowledge-based assistant.
+The capital of France is London, not Paris.

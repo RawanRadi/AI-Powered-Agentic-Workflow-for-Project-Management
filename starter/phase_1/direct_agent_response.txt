@@ -1,0 +1,2 @@
+The capital of France is Paris.
+The DirectPromptAgent responses above are general based on gpt-3.5-turbo model
