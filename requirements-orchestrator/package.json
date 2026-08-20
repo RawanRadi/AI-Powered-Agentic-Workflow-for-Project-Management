@@ -1,0 +1,24 @@
+{
+  "name": "requirements-orchestrator",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Requirements Orchestrator - a React/Vite frontend that orchestrates multi-agent requirements engineering.",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "file-saver": "^2.0.5",
+    "mammoth": "^1.8.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.26.2"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^5.4.8"
+  }
+}

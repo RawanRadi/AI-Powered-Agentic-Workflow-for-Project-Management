@@ -8,7 +8,7 @@ from openai import OpenAI
 load_dotenv()
 
 # Retrieve OpenAI API key from environment variables
-load_dotenv("./tests/.env")
+load_dotenv("../.env")
 api_key = os.getenv("OPENAI_API_KEY")
 
 prompt = "What is the capital of France?"

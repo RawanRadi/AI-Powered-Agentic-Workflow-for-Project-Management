@@ -8,7 +8,7 @@ from openai import OpenAI
 from dotenv import load_dotenv
 from datetime import datetime
 
-load_dotenv("../tests/.env")
+load_dotenv("../.env")
 
 # DirectPromptAgent class definition
 class DirectPromptAgent:

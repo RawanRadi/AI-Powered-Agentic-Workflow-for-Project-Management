@@ -1,0 +1,672 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Requirements Orchestrator</title>
+    <style>
+      :root {
+        --color-primary: #006c35;
+        --color-primary-dark: #00552a;
+        --color-light-green: #e8f5ee;
+        --color-white: #ffffff;
+        --color-dark-text: #1f2937;
+        --color-muted-text: #6b7280;
+        --color-border-gray: #d1d5db;
+        --color-bg: #f6f9f7;
+        --color-danger: #b91c1c;
+        --color-danger-bg: #fef2f2;
+        --color-success: #065f46;
+        --color-success-bg: #ecfdf5;
+        --radius-sm: 8px;
+        --radius-md: 14px;
+        --radius-lg: 20px;
+        --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06);
+        --shadow-md: 0 8px 24px rgba(16, 24, 40, 0.08);
+        --font-sans: 'Inter', 'Segoe UI', system-ui, -apple-system, Roboto, Arial, sans-serif;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; }
+      body {
+        font-family: var(--font-sans);
+        color: var(--color-dark-text);
+        background: var(--color-bg);
+        line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
+      }
+      h1, h2, h3 { margin: 0; line-height: 1.25; }
+      p { margin: 0; }
+      button { font-family: inherit; cursor: pointer; }
+      a { color: var(--color-primary); }
+
+      .container { width: 100%; max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+      .topbar {
+        background: var(--color-white);
+        border-bottom: 1px solid var(--color-border-gray);
+        position: sticky; top: 0; z-index: 20;
+      }
+      .topbar__inner { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+      .brand { display: flex; align-items: center; gap: 12px; font-weight: 800; color: var(--color-primary); font-size: 15px; }
+      .brand__logo {
+        width: 36px; height: 36px; border-radius: 10px;
+        background: linear-gradient(135deg, var(--color-primary), #04824a);
+        display: grid; place-items: center; color: #fff;
+      }
+      .badge {
+        display: inline-flex; align-items: center; gap: 6px;
+        font-size: 12px; font-weight: 700; padding: 5px 11px; border-radius: 999px;
+        background: var(--color-light-green); color: var(--color-primary);
+      }
+
+      .hero { background: linear-gradient(180deg, var(--color-light-green), var(--color-bg)); padding: 52px 0 38px; }
+      .hero__grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: 40px; align-items: center; }
+      .hero__eyebrow {
+        display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700;
+        letter-spacing: 0.06em; text-transform: uppercase; color: var(--color-primary);
+        background: var(--color-white); border: 1px solid var(--color-border-gray);
+        padding: 6px 12px; border-radius: 999px; box-shadow: var(--shadow-sm);
+      }
+      .hero__title { font-size: 38px; font-weight: 800; margin: 18px 0 14px; letter-spacing: -0.02em; }
+      .hero__desc { font-size: 17px; color: var(--color-muted-text); max-width: 560px; }
+      .hero__art { display: grid; place-items: center; }
+      .workflow-icon { width: 100%; max-width: 300px; filter: drop-shadow(0 20px 30px rgba(0, 108, 53, 0.18)); }
+
+      .section { padding: 34px 0; }
+      .section__head { margin-bottom: 18px; }
+      .section__title { font-size: 22px; font-weight: 700; }
+      .section__subtitle { color: var(--color-muted-text); font-size: 15px; margin-top: 4px; }
+
+      .card {
+        background: var(--color-white); border: 1px solid var(--color-border-gray);
+        border-radius: var(--radius-lg); box-shadow: var(--shadow-md); padding: 24px;
+      }
+      .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+      .btn {
+        display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        font-size: 14px; font-weight: 600; border-radius: var(--radius-sm);
+        border: 1px solid transparent; padding: 11px 18px;
+        transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.05s ease;
+      }
+      .btn:active { transform: translateY(1px); }
+      .btn--primary { background: var(--color-primary); color: #fff; box-shadow: var(--shadow-sm); }
+      .btn--primary:hover:not(:disabled) { background: var(--color-primary-dark); }
+      .btn--primary:disabled { background: #9cc7ad; cursor: not-allowed; box-shadow: none; }
+      .btn--ghost { background: var(--color-white); color: var(--color-primary); border-color: var(--color-border-gray); }
+      .btn--ghost:hover { background: var(--color-light-green); border-color: var(--color-primary); }
+      .btn--lg { padding: 13px 22px; font-size: 15px; }
+
+      .uploader {
+        border: 2px dashed var(--color-border-gray); border-radius: var(--radius-md);
+        background: var(--color-bg); padding: 26px; text-align: center;
+        transition: border-color 0.15s ease, background 0.15s ease; cursor: pointer;
+      }
+      .uploader--drag { border-color: var(--color-primary); background: var(--color-light-green); }
+      .uploader__icon {
+        width: 46px; height: 46px; border-radius: 50%; background: var(--color-light-green);
+        color: var(--color-primary); display: grid; place-items: center; margin: 0 auto 12px;
+      }
+      .uploader__title { font-weight: 600; font-size: 15px; }
+      .uploader__hint { color: var(--color-muted-text); font-size: 13px; margin-top: 4px; }
+      .uploader__actions { margin-top: 14px; }
+      .file-chip {
+        display: inline-flex; align-items: center; gap: 10px; margin-top: 14px; padding: 8px 12px;
+        background: var(--color-white); border: 1px solid var(--color-border-gray);
+        border-radius: 999px; font-size: 13px;
+      }
+      .file-chip__remove { border: none; background: transparent; color: var(--color-muted-text); font-size: 16px; line-height: 1; padding: 0; }
+      .file-chip__remove:hover { color: var(--color-danger); }
+
+      .field-label { display: flex; align-items: center; justify-content: space-between; font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+      .field-label__count { color: var(--color-muted-text); font-weight: 500; }
+      .textarea {
+        width: 100%; min-height: 220px; resize: vertical;
+        border: 1px solid var(--color-border-gray); border-radius: var(--radius-md);
+        padding: 14px 16px; font-family: inherit; font-size: 14px; color: var(--color-dark-text);
+        background: var(--color-white); line-height: 1.6;
+      }
+      .textarea:focus { outline: none; border-color: var(--color-primary); box-shadow: 0 0 0 3px rgba(0, 108, 53, 0.12); }
+
+      .input-footer { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 22px; flex-wrap: wrap; }
+      .input-footer__hint { font-size: 13px; color: var(--color-muted-text); }
+
+      .alert { display: flex; align-items: flex-start; gap: 10px; border-radius: var(--radius-md); padding: 12px 16px; font-size: 14px; margin-top: 16px; }
+      .alert--error { background: var(--color-danger-bg); color: var(--color-danger); border: 1px solid #fecaca; }
+      .alert--success { background: var(--color-success-bg); color: var(--color-success); border: 1px solid #a7f3d0; }
+
+      .stepper { display: flex; align-items: stretch; flex-wrap: wrap; }
+      .stepper__node { flex: 1; min-width: 140px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px; padding: 6px 8px; }
+      .stepper__badge {
+        width: 50px; height: 50px; border-radius: 15px; display: grid; place-items: center;
+        background: var(--color-white); border: 2px solid var(--color-border-gray);
+        color: var(--color-muted-text); transition: all 0.25s ease; font-weight: 700;
+      }
+      .stepper__node--active .stepper__badge { border-color: var(--color-primary); color: var(--color-primary); background: var(--color-light-green); box-shadow: 0 0 0 4px rgba(0, 108, 53, 0.1); }
+      .stepper__node--done .stepper__badge { border-color: var(--color-primary); background: var(--color-primary); color: #fff; }
+      .stepper__label { font-size: 13px; font-weight: 600; }
+      .stepper__caption { font-size: 12px; color: var(--color-muted-text); }
+      .stepper__connector { align-self: center; color: var(--color-border-gray); padding: 0 2px 30px; font-size: 20px; }
+      .stepper__node--done + .stepper__connector, .stepper__node--active + .stepper__connector { color: var(--color-primary); }
+
+      .pulse-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--color-primary); animation: pulse 1.1s infinite ease-in-out; display: inline-block; margin-right: 10px; }
+      @keyframes pulse { 0%, 100% { opacity: 0.35; transform: scale(0.85); } 50% { opacity: 1; transform: scale(1.15); } }
+      .spinner { width: 18px; height: 18px; border: 2px solid rgba(255, 255, 255, 0.5); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
+      @keyframes spin { to { transform: rotate(360deg); } }
+
+      .results-grid { display: grid; gap: 20px; }
+      .agent-card { background: var(--color-white); border: 1px solid var(--color-border-gray); border-radius: var(--radius-lg); box-shadow: var(--shadow-md); overflow: hidden; }
+      .agent-card__header { display: flex; align-items: center; gap: 14px; padding: 18px 22px; background: var(--color-light-green); border-bottom: 1px solid var(--color-border-gray); }
+      .agent-card__avatar { width: 44px; height: 44px; border-radius: 12px; background: var(--color-primary); color: #fff; display: grid; place-items: center; flex-shrink: 0; font-weight: 700; }
+      .agent-card__title { font-size: 16px; font-weight: 700; }
+      .agent-card__role { font-size: 12.5px; color: var(--color-muted-text); }
+      .agent-card__body { padding: 22px; display: grid; gap: 20px; }
+      .output-block__title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-primary); margin-bottom: 10px; }
+      .output-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+      .output-list__item { position: relative; padding: 12px 14px 12px 34px; background: var(--color-bg); border: 1px solid var(--color-border-gray); border-radius: var(--radius-sm); font-size: 14px; }
+      .output-list__item::before { content: ''; position: absolute; left: 14px; top: 18px; width: 8px; height: 8px; border-radius: 50%; background: var(--color-primary); }
+      .output-list__item strong { display: block; margin-bottom: 2px; }
+      .output-sub { color: var(--color-muted-text); font-size: 13px; }
+
+      .export-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+
+      .empty-state { text-align: center; padding: 46px 24px; border: 1px dashed var(--color-border-gray); border-radius: var(--radius-lg); background: var(--color-white); }
+      .empty-state__icon { width: 64px; height: 64px; margin: 0 auto 16px; border-radius: 50%; background: var(--color-light-green); color: var(--color-primary); display: grid; place-items: center; }
+      .empty-state__title { font-size: 18px; font-weight: 700; }
+      .empty-state__desc { color: var(--color-muted-text); font-size: 14px; margin-top: 6px; max-width: 440px; margin-left: auto; margin-right: auto; }
+
+      .footer { border-top: 1px solid var(--color-border-gray); background: var(--color-white); padding: 20px 0; color: var(--color-muted-text); font-size: 13px; margin-top: 20px; }
+      .footer__inner { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+      .hidden { display: none !important; }
+
+      @media (max-width: 900px) {
+        .hero__grid { grid-template-columns: 1fr; }
+        .hero__art { order: -1; }
+        .grid-2 { grid-template-columns: 1fr; }
+        .hero__title { font-size: 30px; }
+      }
+      @media (max-width: 620px) {
+        .stepper { flex-direction: column; }
+        .stepper__node { flex-direction: row; text-align: left; align-items: center; }
+        .stepper__connector { display: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Top bar -->
+    <header class="topbar">
+      <div class="container topbar__inner">
+        <div class="brand">
+          <span class="brand__logo">◇</span>
+          Requirements Orchestrator
+        </div>
+        <span class="badge">Multi-Agent AI · Offline</span>
+      </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="container hero__grid">
+        <div>
+          <span class="hero__eyebrow">✦ Multi-Agent AI</span>
+          <h1 class="hero__title">Requirements Orchestrator</h1>
+          <p class="hero__desc">
+            Upload or paste a Business Requirements Document and let three specialized
+            agents — Product Manager, Program Manager and Development Engineer — turn it
+            into a structured, executive-ready delivery report. Runs fully offline.
+          </p>
+        </div>
+        <div class="hero__art">
+          <svg class="workflow-icon" viewBox="0 0 320 260" role="img" aria-label="Multi-agent workflow">
+            <defs>
+              <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#006C35" />
+                <stop offset="1" stop-color="#04824a" />
+              </linearGradient>
+            </defs>
+            <rect x="112" y="10" width="96" height="46" rx="12" fill="#fff" stroke="#D1D5DB" />
+            <text x="160" y="38" text-anchor="middle" font-size="14" font-weight="700" fill="#1F2937">BRD</text>
+            <line x1="160" y1="56" x2="160" y2="86" stroke="#006C35" stroke-width="2" />
+            <rect x="70" y="86" width="180" height="42" rx="12" fill="#E8F5EE" stroke="#006C35" />
+            <text x="160" y="112" text-anchor="middle" font-size="12" font-weight="600" fill="#006C35">Product Manager</text>
+            <line x1="160" y1="128" x2="160" y2="150" stroke="#006C35" stroke-width="2" />
+            <rect x="70" y="150" width="180" height="42" rx="12" fill="#E8F5EE" stroke="#006C35" />
+            <text x="160" y="176" text-anchor="middle" font-size="12" font-weight="600" fill="#006C35">Program Manager</text>
+            <line x1="160" y1="192" x2="160" y2="214" stroke="#006C35" stroke-width="2" />
+            <rect x="70" y="214" width="180" height="42" rx="12" fill="url(#g)" />
+            <text x="160" y="240" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">Development Engineer</text>
+          </svg>
+        </div>
+      </div>
+    </section>
+
+    <main class="container" style="padding-bottom: 40px;">
+      <!-- Input -->
+      <section class="section">
+        <div class="section__head">
+          <h2 class="section__title">Provide your BRD</h2>
+          <p class="section__subtitle">Upload a .txt file, drag &amp; drop, or paste the text directly.</p>
+        </div>
+        <div class="card">
+          <div class="grid-2">
+            <div id="uploader" class="uploader" tabindex="0" role="button" aria-label="Upload a BRD document">
+              <div class="uploader__icon">⭱</div>
+              <div id="uploaderTitle" class="uploader__title">Drag &amp; drop your BRD here</div>
+              <div class="uploader__hint">or click to browse · supports .txt</div>
+              <div class="uploader__actions">
+                <button id="browseBtn" type="button" class="btn btn--ghost">⭱ Upload BRD</button>
+              </div>
+              <div id="fileChip" class="file-chip hidden">
+                <span>▤</span><span id="fileName"></span>
+                <button id="removeFile" type="button" class="file-chip__remove" aria-label="Remove file">×</button>
+              </div>
+              <input id="fileInput" type="file" accept=".txt" hidden />
+            </div>
+
+            <div>
+              <label class="field-label" for="brdText">
+                <span>≣ Paste BRD text</span>
+                <span id="charCount" class="field-label__count">0 characters</span>
+              </label>
+              <textarea id="brdText" class="textarea" placeholder="Paste your Business Requirements Document here. Include goals, scope, users, and functional requirements for the best results…"></textarea>
+            </div>
+          </div>
+
+          <div id="errorAlert" class="alert alert--error hidden">
+            <span>⚠</span><span id="errorText"></span>
+          </div>
+
+          <div class="input-footer">
+            <span class="input-footer__hint">The BRD is processed into epics, features and engineering tasks.</span>
+            <button id="generateBtn" type="button" class="btn btn--primary btn--lg" disabled>✦ Generate Report</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Workflow -->
+      <section class="section">
+        <div class="section__head">
+          <h2 class="section__title">How it works</h2>
+          <p class="section__subtitle">A transparent, agent-by-agent pipeline from document to delivery plan.</p>
+        </div>
+        <div class="card">
+          <div id="stepper" class="stepper"></div>
+        </div>
+      </section>
+
+      <!-- Results -->
+      <section class="section" id="resultsSection">
+        <div class="section__head">
+          <h2 class="section__title">Delivery report</h2>
+          <p class="section__subtitle">Structured output from each specialized agent.</p>
+        </div>
+
+        <div id="loadingCard" class="card hidden" style="text-align: center;">
+          <div style="font-size: 18px; font-weight: 700; margin-bottom: 6px;">
+            <span class="pulse-dot"></span>Orchestrating your delivery report…
+          </div>
+          <p style="color: var(--color-muted-text); font-size: 14px; margin-bottom: 26px;">
+            Agents are collaborating: Product Manager → Program Manager → Development Engineer
+          </p>
+          <div id="loadingStepper" class="stepper"></div>
+        </div>
+
+        <div id="emptyState" class="empty-state">
+          <div class="empty-state__icon">◇</div>
+          <div class="empty-state__title">No report yet</div>
+          <p class="empty-state__desc">
+            Provide a BRD above and select <strong>Generate Report</strong>. Your Product
+            Manager, Program Manager and Development Engineer outputs will appear here.
+          </p>
+        </div>
+
+        <div id="successAlert" class="alert alert--success hidden" style="margin-top: 0; margin-bottom: 20px;">
+          <span>✓</span><span id="successText"></span>
+        </div>
+
+        <div id="resultsGrid" class="results-grid hidden"></div>
+
+        <div id="exportCard" class="card hidden" style="margin-top: 22px;">
+          <div class="section__head" style="margin-bottom: 14px;">
+            <h3 class="section__title" style="font-size: 18px;">Export</h3>
+            <p class="section__subtitle">Share the report with your team in one click.</p>
+          </div>
+          <div class="export-actions">
+            <button id="exportMd" type="button" class="btn btn--ghost">⬇ Export Markdown</button>
+            <button id="exportDocx" type="button" class="btn btn--ghost">⬇ Export DOCX</button>
+            <button id="copyBtn" type="button" class="btn btn--ghost">⧉ Copy to Clipboard</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container footer__inner">
+        <span>© <span id="year"></span> Requirements Orchestrator</span>
+        <span>Standalone offline build · no server required</span>
+      </div>
+    </footer>
+
+    <script>
+      /* ---------------- State ---------------- */
+      const state = { brdText: '', fileName: '', inputType: 'text', report: null, loading: false };
+
+      const PIPELINE = [
+        { label: 'BRD', caption: 'Input document' },
+        { label: 'Product Manager', caption: 'User stories' },
+        { label: 'Program Manager', caption: 'Features' },
+        { label: 'Development Engineer', caption: 'Dev tasks' },
+        { label: 'Delivery Report', caption: 'Final output' },
+      ];
+
+      const $ = (id) => document.getElementById(id);
+      document.getElementById('year').textContent = new Date().getFullYear();
+
+      /* ---------------- Stepper rendering ---------------- */
+      function renderStepper(el, activeIndex, completedTo) {
+        el.innerHTML = '';
+        PIPELINE.forEach((step, i) => {
+          const done = i <= completedTo;
+          const active = i === activeIndex;
+          const node = document.createElement('div');
+          node.className = 'stepper__node' + (done ? ' stepper__node--done' : active ? ' stepper__node--active' : '');
+          node.innerHTML =
+            '<div class="stepper__badge">' + (done ? '✓' : i + 1) + '</div>' +
+            '<div><div class="stepper__label">' + step.label + '</div>' +
+            '<div class="stepper__caption">' + step.caption + '</div></div>';
+          el.appendChild(node);
+          if (i < PIPELINE.length - 1) {
+            const c = document.createElement('div');
+            c.className = 'stepper__connector';
+            c.textContent = '↓';
+            el.appendChild(c);
+          }
+        });
+      }
+      renderStepper($('stepper'), -1, -1);
+
+      /* ---------------- Input handling ---------------- */
+      const uploader = $('uploader');
+      const fileInput = $('fileInput');
+      const brdTextEl = $('brdText');
+
+      function setError(msg) {
+        if (msg) { $('errorText').textContent = msg; $('errorAlert').classList.remove('hidden'); }
+        else { $('errorAlert').classList.add('hidden'); }
+      }
+      function updateGenerateEnabled() {
+        $('generateBtn').disabled = !(state.brdText.trim().length > 0) || state.loading;
+      }
+      function setFileChip() {
+        if (state.fileName) {
+          $('fileName').textContent = state.fileName;
+          $('fileChip').classList.remove('hidden');
+        } else {
+          $('fileChip').classList.add('hidden');
+        }
+      }
+
+      function readFile(file) {
+        if (!file) return;
+        const lower = file.name.toLowerCase();
+        if (lower.endsWith('.docx')) {
+          setError('This offline build supports .txt uploads and pasted text. For .docx, please paste the document text into the box.');
+          return;
+        }
+        if (!lower.endsWith('.txt')) {
+          setError('Unsupported file type. Please upload a .txt file or paste the text.');
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = () => {
+          const text = reader.result || '';
+          if (!text.trim()) { setError('The uploaded document appears to be empty.'); return; }
+          setError('');
+          state.fileName = file.name;
+          state.inputType = 'text';
+          state.brdText = text;
+          brdTextEl.value = text;
+          $('charCount').textContent = text.length.toLocaleString() + ' characters';
+          setFileChip();
+          updateGenerateEnabled();
+        };
+        reader.onerror = () => setError('Could not read the file.');
+        reader.readAsText(file);
+      }
+
+      $('browseBtn').addEventListener('click', (e) => { e.stopPropagation(); fileInput.click(); });
+      uploader.addEventListener('click', () => fileInput.click());
+      uploader.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') fileInput.click(); });
+      fileInput.addEventListener('change', (e) => { readFile(e.target.files[0]); fileInput.value = ''; });
+      $('removeFile').addEventListener('click', (e) => { e.stopPropagation(); state.fileName = ''; setFileChip(); });
+
+      uploader.addEventListener('dragover', (e) => { e.preventDefault(); uploader.classList.add('uploader--drag'); });
+      uploader.addEventListener('dragleave', () => uploader.classList.remove('uploader--drag'));
+      uploader.addEventListener('drop', (e) => {
+        e.preventDefault(); uploader.classList.remove('uploader--drag');
+        readFile(e.dataTransfer.files[0]);
+      });
+
+      brdTextEl.addEventListener('input', (e) => {
+        state.brdText = e.target.value;
+        if (!state.fileName) state.inputType = 'text';
+        $('charCount').textContent = e.target.value.length.toLocaleString() + ' characters';
+        updateGenerateEnabled();
+      });
+
+      /* ---------------- Report generation (offline mock) ---------------- */
+      function deriveSubject(content) {
+        if (!content) return 'product';
+        const firstLine = content.split('\n').find((l) => l.trim().length > 0) || '';
+        const words = firstLine.trim().split(/\s+/).slice(0, 6).join(' ');
+        return words.length > 2 ? words.toLowerCase() : 'product';
+      }
+
+      function generateReport(content) {
+        const subject = deriveSubject(content);
+        return {
+          productManager: {
+            epic: 'Deliver the ' + subject + ' experience described in the BRD',
+            userStories: [
+              { title: 'Submit a request', detail: 'As an end user, I want to submit a ' + subject + ' request so that my need is captured and routed correctly.' },
+              { title: 'Track progress', detail: 'As a business analyst, I want to track ' + subject + ' items so that I can report progress to stakeholders.' },
+              { title: 'Receive notifications', detail: 'As a project manager, I want automated notifications so that I stay informed of ' + subject + ' updates.' },
+            ],
+            acceptanceCriteria: [
+              'Submitted requests are validated and persisted before a confirmation is shown.',
+              'Status changes are reflected in the dashboard within 5 seconds.',
+              'Notifications are delivered to the correct recipients based on role.',
+            ],
+          },
+          programManager: {
+            features: [
+              { title: 'Intake & Routing', detail: 'Capture BRD inputs and route work items to responsible teams automatically.' },
+              { title: 'Progress Dashboard', detail: 'A consolidated view of milestones, dependencies and delivery health.' },
+              { title: 'Notification Service', detail: 'Role-based, event-driven alerts across email and in-app channels.' },
+            ],
+            dependencies: [
+              'Identity & access management for role-based routing.',
+              'Central data store shared by the intake and dashboard features.',
+            ],
+            milestones: [
+              { title: 'M1 — Foundations', detail: 'Data model, authentication and intake API ready.' },
+              { title: 'M2 — Core Experience', detail: 'Dashboard and routing live for pilot users.' },
+              { title: 'M3 — GA', detail: 'Notifications, reporting and hardening complete.' },
+            ],
+          },
+          developmentEngineer: {
+            tasks: [
+              { title: 'TASK-001 · Define data model', detail: 'Design and migrate the schema for requests, statuses and audit history.' },
+              { title: 'TASK-002 · Build intake API', detail: 'Implement the POST endpoint with validation and persistence.' },
+              { title: 'TASK-003 · Dashboard UI', detail: 'Create the progress dashboard with live status updates.' },
+            ],
+            technicalNotes: [
+              'Use an event-driven pattern to decouple intake from notifications.',
+              'Cache dashboard queries to keep status refresh under 5 seconds.',
+            ],
+            testTasks: [
+              'Unit tests for validation rules on the intake API.',
+              'Integration tests covering routing to each responsible team.',
+              'End-to-end test for the submit → track → notify flow.',
+            ],
+          },
+        };
+      }
+
+      /* ---------------- Results rendering ---------------- */
+      function lineFor(item) {
+        if (typeof item === 'string') return item;
+        if (!item) return '';
+        if (item.title && item.detail) return item.title + ' — ' + item.detail;
+        return item.title || item.detail || '';
+      }
+      function esc(s) {
+        return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+      }
+      function blockHtml(title, items) {
+        if (!items || !items.length) return '';
+        const li = items.map((it) => {
+          if (typeof it === 'string') return '<li class="output-list__item">' + esc(it) + '</li>';
+          return '<li class="output-list__item">' +
+            (it.title ? '<strong>' + esc(it.title) + '</strong>' : '') +
+            (it.detail ? '<span class="output-sub">' + esc(it.detail) + '</span>' : '') + '</li>';
+        }).join('');
+        return '<div class="output-block"><div class="output-block__title">' + title + '</div><ul class="output-list">' + li + '</ul></div>';
+      }
+      function agentCard(letter, title, role, blocks) {
+        return '<article class="agent-card"><header class="agent-card__header">' +
+          '<div class="agent-card__avatar">' + letter + '</div>' +
+          '<div><div class="agent-card__title">' + title + '</div>' +
+          '<div class="agent-card__role">' + role + '</div></div></header>' +
+          '<div class="agent-card__body">' + blocks + '</div></article>';
+      }
+      function renderResults(report) {
+        const pm = report.productManager, prog = report.programManager, dev = report.developmentEngineer;
+        const grid = $('resultsGrid');
+        grid.innerHTML =
+          agentCard('P', 'Product Manager', 'Epics, user stories & acceptance criteria',
+            blockHtml('Epic', pm.epic ? [pm.epic] : []) +
+            blockHtml('User Stories', pm.userStories) +
+            blockHtml('Acceptance Criteria', pm.acceptanceCriteria)) +
+          agentCard('M', 'Program Manager', 'Features, dependencies & milestones',
+            blockHtml('Features', prog.features) +
+            blockHtml('Dependencies', prog.dependencies) +
+            blockHtml('Delivery Milestones', prog.milestones)) +
+          agentCard('D', 'Development Engineer', 'Development tasks, technical notes & tests',
+            blockHtml('Development Tasks', dev.tasks) +
+            blockHtml('Technical Notes', dev.technicalNotes) +
+            blockHtml('Test Tasks', dev.testTasks));
+        grid.classList.remove('hidden');
+      }
+
+      /* ---------------- Export ---------------- */
+      function reportToMarkdown(report) {
+        const pm = report.productManager, prog = report.programManager, dev = report.developmentEngineer;
+        const L = ['# Requirements Delivery Report', ''];
+        L.push('## Product Manager', '');
+        if (pm.epic) L.push('**Epic:** ' + pm.epic, '');
+        L.push('### User Stories'); pm.userStories.forEach((s) => L.push('- ' + lineFor(s)));
+        L.push('', '### Acceptance Criteria'); pm.acceptanceCriteria.forEach((c) => L.push('- ' + lineFor(c)));
+        L.push('', '## Program Manager', '');
+        L.push('### Features'); prog.features.forEach((f) => L.push('- ' + lineFor(f)));
+        L.push('', '### Dependencies'); prog.dependencies.forEach((d) => L.push('- ' + lineFor(d)));
+        L.push('', '### Delivery Milestones'); prog.milestones.forEach((m) => L.push('- ' + lineFor(m)));
+        L.push('', '## Development Engineer', '');
+        L.push('### Development Tasks'); dev.tasks.forEach((t) => L.push('- ' + lineFor(t)));
+        L.push('', '### Technical Notes'); dev.technicalNotes.forEach((n) => L.push('- ' + lineFor(n)));
+        L.push('', '### Test Tasks'); dev.testTasks.forEach((t) => L.push('- ' + lineFor(t)));
+        return L.join('\n');
+      }
+      function download(filename, blob) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = filename;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+      }
+      function exportMarkdown() {
+        download('requirements-delivery-report.md', new Blob([reportToMarkdown(state.report)], { type: 'text/markdown;charset=utf-8' }));
+      }
+      function ul(items) { return '<ul>' + items.map((i) => '<li>' + esc(lineFor(i)) + '</li>').join('') + '</ul>'; }
+      function exportDocx() {
+        const r = state.report, pm = r.productManager, prog = r.programManager, dev = r.developmentEngineer;
+        const body =
+          '<h1>Requirements Delivery Report</h1>' +
+          '<h2>Product Manager</h2>' + (pm.epic ? '<p><strong>Epic:</strong> ' + esc(pm.epic) + '</p>' : '') +
+          '<h3>User Stories</h3>' + ul(pm.userStories) +
+          '<h3>Acceptance Criteria</h3>' + ul(pm.acceptanceCriteria) +
+          '<h2>Program Manager</h2><h3>Features</h3>' + ul(prog.features) +
+          '<h3>Dependencies</h3>' + ul(prog.dependencies) +
+          '<h3>Delivery Milestones</h3>' + ul(prog.milestones) +
+          '<h2>Development Engineer</h2><h3>Development Tasks</h3>' + ul(dev.tasks) +
+          '<h3>Technical Notes</h3>' + ul(dev.technicalNotes) +
+          '<h3>Test Tasks</h3>' + ul(dev.testTasks);
+        const html = '<!doctype html><html xmlns:o="urn:schemas-microsoft-com:office:office" ' +
+          'xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">' +
+          '<head><meta charset="utf-8"><style>body{font-family:Segoe UI,Arial,sans-serif;color:#1F2937}' +
+          'h1{color:#006C35}h2{color:#006C35;border-bottom:1px solid #D1D5DB;padding-bottom:4px}h3{color:#00552A}</style>' +
+          '</head><body>' + body + '</body></html>';
+        download('requirements-delivery-report.doc', new Blob(['\ufeff', html], { type: 'application/msword' }));
+      }
+      function copyToClipboard() {
+        const text = reportToMarkdown(state.report);
+        const done = () => { const b = $('copyBtn'); b.textContent = '✓ Copied!'; setTimeout(() => (b.textContent = '⧉ Copy to Clipboard'), 2000); };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(done).catch(fallbackCopy);
+        } else { fallbackCopy(); }
+        function fallbackCopy() {
+          const ta = document.createElement('textarea');
+          ta.value = text; document.body.appendChild(ta); ta.select();
+          try { document.execCommand('copy'); done(); } catch (e) {}
+          document.body.removeChild(ta);
+        }
+      }
+      $('exportMd').addEventListener('click', exportMarkdown);
+      $('exportDocx').addEventListener('click', exportDocx);
+      $('copyBtn').addEventListener('click', copyToClipboard);
+
+      /* ---------------- Generate flow ---------------- */
+      $('generateBtn').addEventListener('click', () => {
+        const content = state.brdText.trim();
+        if (!content) { setError('Please upload a BRD document or paste BRD text before generating.'); return; }
+        setError('');
+        state.loading = true;
+        updateGenerateEnabled();
+
+        $('emptyState').classList.add('hidden');
+        $('resultsGrid').classList.add('hidden');
+        $('exportCard').classList.add('hidden');
+        $('successAlert').classList.add('hidden');
+        $('loadingCard').classList.remove('hidden');
+        $('generateBtn').innerHTML = '<span class="spinner"></span> Orchestrating…';
+
+        const seq = [ { a: 1, c: 0 }, { a: 2, c: 1 }, { a: 3, c: 2 } ];
+        let i = 0;
+        renderStepper($('loadingStepper'), seq[0].a, seq[0].c);
+        renderStepper($('stepper'), seq[0].a, seq[0].c);
+        const timer = setInterval(() => {
+          i = Math.min(i + 1, seq.length - 1);
+          renderStepper($('loadingStepper'), seq[i].a, seq[i].c);
+          renderStepper($('stepper'), seq[i].a, seq[i].c);
+        }, 700);
+
+        setTimeout(() => {
+          clearInterval(timer);
+          state.report = generateReport(content);
+          state.loading = false;
+
+          $('loadingCard').classList.add('hidden');
+          renderStepper($('stepper'), -1, 4);
+          renderResults(state.report);
+          $('successText').textContent = 'Delivery report generated successfully (offline demo engine).';
+          $('successAlert').classList.remove('hidden');
+          $('exportCard').classList.remove('hidden');
+          $('generateBtn').innerHTML = '✦ Generate Report';
+          updateGenerateEnabled();
+          $('resultsSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 2300);
+      });
+    </script>
+  </body>
+</html>

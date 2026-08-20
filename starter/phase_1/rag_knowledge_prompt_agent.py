@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 
 # Load environment variables from .env file
-load_dotenv("./tests/.env")
+load_dotenv("../.env")
 openai_api_key = os.getenv("OPENAI_API_KEY")
 
 # Define the parameters for the agent
